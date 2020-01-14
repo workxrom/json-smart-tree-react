@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
+import Select from "react-select";
+
 import * as serviceWorker from "./serviceWorker";
-import { Forest } from "./Forest";
+import { Forest, CollapsSettings } from "./components";
 
 const Example = () => {
+  const [collaps, setCollaps] = useState([
+    { test: "value.content.value", replaceTo: "value.content.value" }
+  ]);
+
   const json = {
     name: "@d11t/frontend",
     id: "0",
@@ -191,16 +197,18 @@ const Example = () => {
     }
   };
 
+  // const onKeyDown = e => {
+  //   console.log("e", e.target.value, e.keyCode);
+  //   if (e.keyCode === 13) {
+  //     console.log("add new value", e.target.value);
+  //   }
+  // };
+
   return (
     <div className="App">
       <header className="App-header">
-        <Forest
-          json={json}
-          show
-          collaps={[
-            { test: "value.content.value", replaceTo: "value.content.value" }
-          ]}
-        />
+        <CollapsSettings collaps={collaps} setCollaps={setCollaps} />
+        <Forest json={json} show collaps={collaps} />
       </header>
     </div>
   );
