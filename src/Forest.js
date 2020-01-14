@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from "react";
 import get from "lodash.get";
 
-import { DivLeveled, Text } from "./components";
+import { DivLeveled, Text, KeyLine } from "./components";
 
 const Forest = ({ json, level = 0, collaps = [] }) => {
   const [expanded, setExpanded] = useState({});
+  const [cuttedJson, setCuttedJson] = useState({});
 
   const onExpand = useCallback(
     index => () =>
@@ -15,6 +16,16 @@ const Forest = ({ json, level = 0, collaps = [] }) => {
     [expanded, setExpanded]
   );
 
+  const onToggleCut = useCallback(
+    cutPath => () => {
+      setCuttedJson({
+        ...cuttedJson,
+        [cutPath]: !cuttedJson[cutPath]
+      });
+    },
+    [cuttedJson]
+  );
+
   if (Object.keys(json).length === 0) {
     return (
       <DivLeveled level={level}>
@@ -23,20 +34,20 @@ const Forest = ({ json, level = 0, collaps = [] }) => {
     );
   }
 
-  const foundCollaps = collaps.filter(({ test }) => get(json, test));
-  if (foundCollaps.length > 0) {
-    console.log("found collaps!", foundCollaps);
-    return (
-      <div>
-        <Text type="hidden">{`hidden: ${foundCollaps[0].replaceTo}`}</Text>
-        <Forest
-          json={get(json, foundCollaps[0].replaceTo)}
-          level={level}
-          collaps={collaps}
-        />
-      </div>
-    );
-  }
+  // if (foundCollaps.length > 0) {
+  //   console.log("found collapses!", foundCollaps);
+
+  //   const cutJson = cuttedJson[cutPath] ? get(json, cutPath) : json;
+
+  //   return (
+  //     <div>
+  //       <Text onClick={onToggleCut(cutPath)} type="hidden">{`${
+  //         cuttedJson[cutPath] ? "hidden" : "shown"
+  //       }: ${foundCollaps[0].replaceTo}`}</Text>
+  //       <Forest json={cutJson} level={level} collaps={collaps} />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div>
@@ -46,32 +57,38 @@ const Forest = ({ json, level = 0, collaps = [] }) => {
           (typeof json[key] === "object" ||
             (Array.isArray(json[key]) && json[key].length > 0));
 
+        const foundCollaps = collaps.filter(({ test }) => get(json[key], test));
+        const cutObject = foundCollaps.length > 0 ? foundCollaps[0] : null;
+        const cutPath = get(cutObject, "replaceTo");
+        const cutJson =
+          cutPath && cuttedJson[cutPath] ? get(json[key], cutPath) : null;
+
+        const actualJson = cutJson ? cutJson : json[key];
+
+        if (cutPath && typeof cuttedJson[cutPath] !== "boolean") {
+          setCuttedJson({
+            ...cuttedJson,
+            [cutPath]: true
+          });
+        }
+
         return (
           <DivLeveled index={index} level={level}>
-            <div>
-              <Text type="key" onClick={isExpandable ? onExpand(index) : null}>
-                {key}
-              </Text>
-              <Text type="json">{`"${json[key]}"`}</Text>
-              {`        `}
-              {isExpandable && (
-                <span>
-                  <Text type="text">
-                    {Array.isArray(json[key])
-                      ? ` [] ${Object.keys(json[key]).length} items`
-                      : ` {} ${Object.keys(json[key]).length} keys`}
-                  </Text>
-                  <button
-                    style={{ marginLeft: "0.5rem" }}
-                    onClick={onExpand(index)}
-                  >
-                    {expanded[index] ? "Скрыть" : "Открыть"}
-                  </button>
-                </span>
-              )}
-            </div>
+            {cutObject && (
+              <Text onClick={onToggleCut(cutPath)} type="hidden">{`${
+                cuttedJson[cutPath] ? "hidden" : "shown"
+              }: ${cutPath}`}</Text>
+            )}
+            <KeyLine
+              isExpandable={isExpandable}
+              isExpanded={expanded[index]}
+              onExpand={onExpand}
+              index={index}
+              json={actualJson}
+              keyName={key}
+            />
             {isExpandable && expanded[index] && (
-              <Forest json={json[key]} level={level + 1} collaps={collaps} />
+              <Forest json={actualJson} level={level + 1} collaps={collaps} />
             )}
           </DivLeveled>
         );
