@@ -22,6 +22,12 @@ const Text = ({ type, children, ...other }) => {
         color: "gray"
       };
       break;
+    case "shown":
+      style = {
+        ...style,
+        color: "rgb(80,80,80)"
+      };
+      break;
     case "text":
       style = {
         ...style,

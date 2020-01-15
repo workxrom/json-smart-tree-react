@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import Select from "react-select";
 
 import * as serviceWorker from "./serviceWorker";
 import { Forest, CollapsSettings } from "./components";
@@ -9,6 +8,25 @@ const Example = () => {
   const [collaps, setCollaps] = useState([
     { test: "value.content.value", replaceTo: "value.content.value" }
   ]);
+
+  useEffect(() => {
+    // Инициализация фильтров при первой загрузке
+    const collapsData = localStorage.getItem("collapsData");
+    if (collapsData) {
+      try {
+        setCollaps(JSON.parse(collapsData));
+      } catch (error) {
+        console.error("error", error.message);
+      }
+    } else {
+      localStorage.setItem("collapsData", JSON.stringify(collaps));
+    }
+  }, []); //  eslint-disable-line
+
+  useEffect(() => {
+    // Сохранение фильтров в стору на каждое изменение
+    localStorage.setItem("collapsData", JSON.stringify(collaps));
+  }, [collaps]);
 
   const json = {
     name: "@d11t/frontend",
@@ -197,18 +215,11 @@ const Example = () => {
     }
   };
 
-  // const onKeyDown = e => {
-  //   console.log("e", e.target.value, e.keyCode);
-  //   if (e.keyCode === 13) {
-  //     console.log("add new value", e.target.value);
-  //   }
-  // };
-
   return (
     <div className="App">
       <header className="App-header">
         <CollapsSettings collaps={collaps} setCollaps={setCollaps} />
-        <Forest json={json} show collaps={collaps} />
+        <Forest json={json} collaps={collaps} />
       </header>
     </div>
   );
