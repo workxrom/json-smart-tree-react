@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 
 import * as serviceWorker from "./serviceWorker";
-import { Forest, CollapsSettings } from "./components";
+import { Forest, CollapsSettings, Search } from "./components";
 
 const Example = () => {
   const [collaps, setCollaps] = useState([
     { test: "value.content.value", replaceTo: "value.content.value" }
   ]);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     // Инициализация фильтров при первой загрузке
@@ -21,12 +22,21 @@ const Example = () => {
     } else {
       localStorage.setItem("collapsData", JSON.stringify(collaps));
     }
+
+    const searchTextData = localStorage.getItem("searchText");
+    if (searchTextData) {
+      setSearchText(searchTextData);
+    }
   }, []); //  eslint-disable-line
 
   useEffect(() => {
     // Сохранение фильтров в стору на каждое изменение
     localStorage.setItem("collapsData", JSON.stringify(collaps));
   }, [collaps]);
+
+  const onSearch = useCallback(text => {
+    console.log(`onSearch`, text);
+  }, []);
 
   const json = {
     name: "@d11t/frontend",
@@ -219,7 +229,12 @@ const Example = () => {
     <div className="App">
       <header className="App-header">
         <CollapsSettings collaps={collaps} setCollaps={setCollaps} />
-        <Forest json={json} collaps={collaps} />
+        <Search
+          searchText={searchText}
+          setSearchText={setSearchText}
+          onSearch={onSearch}
+        />
+        <Forest json={json} collaps={collaps} searchText={searchText} />
       </header>
     </div>
   );

@@ -16,16 +16,16 @@ const Text = ({ type, children, ...other }) => {
         marginRight: "0.5rem"
       };
       break;
-    case "hidden":
-      style = {
-        ...style,
-        color: "gray"
-      };
-      break;
-    case "shown":
+    case "hide":
       style = {
         ...style,
         color: "rgb(80,80,80)"
+      };
+      break;
+    case "show":
+      style = {
+        ...style,
+        color: "rgb(180,180,180)"
       };
       break;
     case "text":

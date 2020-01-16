@@ -16,7 +16,8 @@ const Tree = props => {
     onToggleCut,
     expanded,
     onExpand,
-    path
+    path,
+    searchText
   } = props;
 
   // Раскрываемый компонент или нет
@@ -50,14 +51,17 @@ const Tree = props => {
     actualKeyName = replaceToPath;
   }
 
+  const heighlight = typeof get(actualJson, searchText) === "object";
+  console.log(`heighlight ${heighlight}`, json, searchText);
+
   return (
     <DivLeveled key={keyName} index={index} level={level}>
       {replaceToPath && (
         <Text
           onClick={onToggleCut(cutPath)}
-          type={Number(cuttedJson[cutPath]) ? "hidden" : "shown"}
+          type={Number(cuttedJson[cutPath]) ? "show" : "hide"}
         >{`${
-          Number(cuttedJson[cutPath]) ? "hidden" : "shown"
+          Number(cuttedJson[cutPath]) ? "show" : "hide"
         }: ${replaceToPath}`}</Text>
       )}
       <KeyLine
@@ -67,6 +71,7 @@ const Tree = props => {
         index={index}
         json={actualJson}
         keyName={keyName}
+        heighlight={heighlight}
       />
       {isExpandable && expanded[index] && (
         <Forest
@@ -74,6 +79,8 @@ const Tree = props => {
           level={level + 1}
           collaps={collaps}
           path={`${path}.${actualKeyName}`}
+          searchText={searchText}
+          heightlight={heighlight}
         />
       )}
     </DivLeveled>

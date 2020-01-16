@@ -2,7 +2,13 @@ import React, { useState, useCallback, useEffect } from "react";
 
 import { DivLeveled, Text, Tree } from "./components";
 
-const Forest = ({ json, level = 0, collaps = [], path = "root" }) => {
+const Forest = ({
+  json,
+  level = 0,
+  collaps = [],
+  path = "root",
+  searchText = ""
+}) => {
   const [expanded, setExpanded] = useState({});
   const [cuttedJson, setCuttedJson] = useState({});
 
@@ -72,6 +78,7 @@ const Forest = ({ json, level = 0, collaps = [], path = "root" }) => {
           expanded={expanded}
           onExpand={onExpand}
           path={path}
+          searchText={searchText}
         />
       ))}
     </div>

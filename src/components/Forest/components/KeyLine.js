@@ -7,7 +7,8 @@ const KeyLine = ({
   index,
   isExpanded,
   json,
-  keyName
+  keyName,
+  heighlight = false
 }) => {
   const maxCharsInLine = 20;
   const jsonData = isExpandable
@@ -17,7 +18,7 @@ const KeyLine = ({
     : json;
 
   return (
-    <div>
+    <div style={heighlight ? { background: "yellow" } : { background: "" }}>
       <Text type="key" onClick={isExpandable ? onExpand(index) : null}>
         {keyName}
       </Text>
